@@ -76,11 +76,11 @@ fn level_order(node: &TreeNode) {
     while !queue.is_empty() {
         let a = queue.remove(0);
         println!("{}", a.val);
-        if a.left.is_some() {
-            queue.push(a.left.as_ref().unwrap());
+        if let Some(b) = &a.left {
+            queue.push(b.as_ref());
         }
-        if a.right.is_some() {
-            queue.push(a.right.as_ref().unwrap());
+        if let Some(b) = &a.right {
+            queue.push(b.as_ref());
         }
     }
 }

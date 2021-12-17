@@ -3,3 +3,5 @@
 pub mod tree;
 
 pub mod queue;
+
+pub mod linked_list;
