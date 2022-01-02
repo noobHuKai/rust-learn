@@ -20,16 +20,16 @@ impl<T: Debug> ListNode<T> {
             next: None,
         }
     }
-    fn get_index_node<'a>(&'a mut self, cur: usize, index: usize) -> Rc<RefCell<Self>> {
-        if cur >= index {
-            return Rc::new(RefCell::new(self));
-        }
-        if let Some(ref mut node) = self.next {
-           let a = node.borrow_mut().get_index_node(cur + 1, index);
-           return a
-        }
-        self
-    }
+    // fn get_index_node<'a>(&'a mut self, cur: usize, index: usize) -> Rc<RefCell<Self>> {
+    //     if cur >= index {
+    //         return Rc::new(RefCell::new(self));
+    //     }
+    //     if let Some(ref mut node) = self.next {
+    //        let a = node.borrow_mut().get_index_node(cur + 1, index);
+    //        return a
+    //     }
+    //     self
+    // }
     fn display(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{:?} => ", self.data)?;
 

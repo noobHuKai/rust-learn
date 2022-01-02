@@ -6,16 +6,19 @@ struct ListNode<T> {
     pub next: Option<Box<ListNode<T>>>,
 }
 impl<T> ListNode<T> {
+    // 新建一个节点
     #[inline]
     fn new(data: T) -> ListNode<T> {
         ListNode { next: None, data }
     }
+    // 获取最后的节点
     fn get_last_node<'a>(&'a mut self) -> &'a mut Self {
         if let Some(ref mut node) = self.next {
             return node.get_last_node();
         }
         self
     }
+    // 根据索引查找节点
     fn get_index_node<'a>(&'a mut self, cur: usize, index: usize) -> &'a mut Self {
         if cur >= index {
             return self;
@@ -40,12 +43,15 @@ impl<T: Debug + Copy> List<T> {
             length: 0,
         }
     }
+    // 头插
     fn push_front(&mut self, data: T) {
         self.insert(0, data);
     }
+    // 尾插
     fn push_back(&mut self, data: T) {
         self.insert(self.length, data);
     }
+    // 插入
     fn insert(&mut self, index: usize, data: T) {
         let mut new_node = ListNode::new(data);
         if let Some(ref mut head) = self.head {
@@ -64,6 +70,7 @@ impl<T: Debug + Copy> List<T> {
         }
         self.length += 1
     }
+    // 删除
     fn delete(&mut self, index: usize) {
         if let Some(ref mut head) = self.head {
             self.length -= 1;
@@ -79,6 +86,7 @@ impl<T: Debug + Copy> List<T> {
             }
         }
     }
+    // 修改
     fn change(&mut self, mut index: usize, data: T) {
         if let Some(ref mut head) = self.head {
             if index >= self.length {
@@ -88,6 +96,7 @@ impl<T: Debug + Copy> List<T> {
             node.data = data;
         }
     }
+    //  查询
     fn search(&mut self, index: usize) -> Option<T> {
         if let Some(ref mut head) = self.head {
             if index >= self.length {
