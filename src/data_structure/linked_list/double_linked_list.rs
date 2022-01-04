@@ -1,6 +1,6 @@
 //! # 双链表
 use std::{
-    cell::{RefCell, RefMut},
+    cell::{RefCell},
     fmt::{Debug, Display},
     rc::Rc,
 };

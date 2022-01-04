@@ -20,6 +20,9 @@ impl<T> Queue<T> {
             return Some(self.data.remove(0));
         }
     }
+    fn length(&self) -> usize {
+        self.data.len()
+    }
 }
 
 #[test]

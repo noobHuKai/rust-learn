@@ -12,14 +12,14 @@ impl<T> ListNode<T> {
         ListNode { next: None, data }
     }
     // 获取最后的节点
-    fn get_last_node<'a>(&'a mut self) -> &'a mut Self {
+    fn get_last_node(&mut self) -> &mut Self {
         if let Some(ref mut node) = self.next {
             return node.get_last_node();
         }
         self
     }
     // 根据索引查找节点
-    fn get_index_node<'a>(&'a mut self, cur: usize, index: usize) -> &'a mut Self {
+    fn get_index_node(&mut self, cur: usize, index: usize) -> &mut Self {
         if cur >= index {
             return self;
         }
