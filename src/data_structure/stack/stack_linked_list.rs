@@ -1,4 +1,4 @@
-//! # 链表实现队列
+//! # 链表实现栈
 
 #[derive(Debug)]
 struct Node<T> {
@@ -10,35 +10,30 @@ impl<T> Node<T> {
     fn new(data: T) -> Self {
         Node { data, next: None }
     }
-
-    fn get_last_node(&mut self) -> &mut Self {
-        if let Some(ref mut node) = self.next {
-            return node.get_last_node();
-        }
-        self
-    }
 }
 
 #[derive(Debug)]
-struct Queue<T> {
+struct Stack<T> {
     data: Option<Box<Node<T>>>,
     length: usize,
 }
 
-impl<T:Copy> Queue<T> {
+impl<T: Copy> Stack<T> {
     fn new() -> Self {
-        Queue {
+        Stack {
             data: None,
             length: 0,
         }
     }
     fn push(&mut self, data: T) {
-        // push end
-        if let Some(ref mut head) = self.data {
-            let mut last_node = head.get_last_node();
-            last_node.next = Some(Box::new(Node::new(data)));
+        let mut new_node = Node::new(data);
+        // push head
+        if self.data.is_some() {
+            let head = self.data.take();
+            new_node.next = head;
+            self.data = Some(Box::new(new_node));
         } else {
-            self.data = Some(Box::new(Node::new(data)));
+            self.data = Some(Box::new(new_node));
         }
         self.length += 1
     }
@@ -58,11 +53,11 @@ impl<T:Copy> Queue<T> {
 
 #[test]
 fn test_queue_linked_list() {
-    let mut q = Queue::new();
-    q.push(1);
-    q.push(7);
-    q.push(9);
-    println!("{:?}", &q);
-    dbg!(q.pop());
-    println!("{:?}", &q);
+    let mut s = Stack::new();
+    s.push(1);
+    s.push(7);
+    s.push(9);
+    println!("{:?}", &s);
+    dbg!(s.pop());
+    println!("{:?}", &s);
 }
