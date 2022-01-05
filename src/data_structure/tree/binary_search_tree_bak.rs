@@ -1,4 +1,4 @@
-//! # 二叉树
+//! # 二叉查找树或者说二叉搜索树(Binary Search Tree)
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct TreeNode {
