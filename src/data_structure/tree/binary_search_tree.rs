@@ -78,27 +78,55 @@ where
         }
     }
     // 删除节点
-    // pub fn delete(&mut self, key: K) {
-    //     if key < self.key {
-    //         if let Some(node) = &mut self.left {
-    //             node.delete(key);
-    //         } else { // not found
-    //         }
-    //     } else if key > self.key {
-    //         if let Some(node) = &mut self.right {
-    //             node.delete(key);
-    //         } else { // not found
-    //         }
-    //     } else {
-    //         match (&mut self.left, &mut self.right) {
-    //             (Some(_), Some(_)) => {}
-    //             (None, Some(_)) => {}
-    //             (Some(_), None) => {}
-    //             (None, None) => {
-    //             }
-    //         }
-    //     }
-    // }
+    pub fn delete(&mut self, key: K) {
+        if key < self.key {
+            if let Some(node) = &mut self.left {
+                if node.key == key {
+                    match (&mut node.left, &mut node.right) {
+                        (Some(_), Some(_)) => {}
+                        (None, Some(_)) => {}
+                        (Some(_), None) => {}
+                        (None, None) => {
+                            // 左节点要删除，且是叶子节点
+                            self.left = None;
+                        }
+                    }
+                } else {
+                    // 判断左节点是否要删除
+                    node.delete(key);
+                }
+            } else { // not found
+            }
+        } else if key > self.key {
+            if let Some(node) = &mut self.right {
+                // 判断右节点是否要删除
+                if node.key == key {
+                    match (&mut node.left, &mut node.right) {
+                        (Some(_), Some(_)) => {}
+                        (None, Some(_)) => {}
+                        (Some(_), None) => {}
+                        (None, None) => {
+                            // 有节点要删除，且是叶子节点
+                            self.right = None;
+                        }
+                    }
+                } else {
+                    node.delete(key);
+                }
+            } else { // not found
+            }
+        }
+        // } else {
+        //     match (&mut self.left, &mut self.right) {
+        //         (Some(_), Some(_)) => {}
+        //         (None, Some(_)) => {}
+        //         (Some(_), None) => {}
+        //         (None, None) => {
+        //             std::mem::drop(self);
+        //         }
+        //     }
+        // }
+    }
 
     pub fn get_node_num(&self) -> usize {
         let left = match &self.left {
@@ -207,11 +235,17 @@ fn test_binary_tree() {
         "***********************************  level order  ***********************************"
     );
     tree.level_order();
-    tree.insert(8, 41);
-    tree.insert(9, 41);
+    tree.change(8, 41);
+    tree.change(9, 41);
 
     println!(
-        "***********************************  level order  ***********************************"
+        "***********************************  change  level order  ***********************************"
+    );
+    tree.level_order();
+
+    tree.delete(8);
+    println!(
+        "***********************************  delete  level order  ***********************************"
     );
     tree.level_order();
 
