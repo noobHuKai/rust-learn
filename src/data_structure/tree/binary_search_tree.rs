@@ -2,61 +2,129 @@
 use std::{cmp::PartialOrd, fmt::Debug};
 
 #[derive(Debug, PartialEq, Eq)]
-pub struct TreeNode<T> {
-    pub val: T,
-    pub left: Option<Box<TreeNode<T>>>,
-    pub right: Option<Box<TreeNode<T>>>,
+pub struct TreeNode<K, V> {
+    pub key: K,
+    pub val: V,
+    pub left: Option<Box<TreeNode<K, V>>>,
+    pub right: Option<Box<TreeNode<K, V>>>,
 }
 
-impl<T> TreeNode<T>
+impl<K, V> TreeNode<K, V>
 where
-    T: PartialOrd + Copy,
+    K: PartialOrd,
+    V: Copy,
 {
     #[inline]
-    pub fn new(val: T) -> Self {
+    pub fn new(key: K, val: V) -> Self {
         TreeNode {
+            key,
             val,
             left: None,
             right: None,
         }
     }
-    pub fn insert(&mut self, val: T) {
-        if val < self.val {
+    pub fn insert(&mut self, key: K, val: V) {
+        if key < self.key {
             if let Some(node) = &mut self.left {
-                node.insert(val);
+                node.insert(key, val);
             } else {
-                self.left = Some(Box::new(TreeNode::new(val)))
+                self.left = Some(Box::new(TreeNode::new(key, val)))
             }
-        } else if val > self.val {
+        } else if key > self.key {
             if let Some(node) = &mut self.right {
-                node.insert(val);
+                node.insert(key, val);
             } else {
-                self.right = Some(Box::new(TreeNode::new(val)))
+                self.right = Some(Box::new(TreeNode::new(key, val)))
             }
+        } else { // as change
         }
-        // 等于不做任何处理，等于也许可以作为更新
     }
-    pub fn search(&self, key: T) -> Option<Box<TreeNode<T>>> {
-        if key < self.val {
+    pub fn change(&mut self, key: K, val: V) {
+        if key < self.key {
+            if let Some(node) = &mut self.left {
+                node.change(key, val);
+            } else { // not found
+            }
+        } else if key > self.key {
+            if let Some(node) = &mut self.right {
+                node.change(key, val);
+            } else { //not found
+            }
+        } else {
+            // change
+            self.val = val;
+        }
+    }
+    pub fn search(&mut self, key: K) -> Option<V> {
+        if key < self.key {
             if let Some(node) = &mut self.left {
                 return node.search(key);
             } else {
+                // not found
                 return None;
             }
-        } else if key > self.val {
-            if let Some(node) = &mut self.left {
+        } else if key > self.key {
+            if let Some(node) = &mut self.right {
                 return node.search(key);
             } else {
+                //not found
                 return None;
             }
         } else {
-            let data = Box::new(self.clone().);
-            return Some(data);
+            return Some(self.val);
+        }
+    }
+    // 删除节点
+    pub fn delete(&mut self, key: K) {
+        if key < self.key {
+            if let Some(node) = &mut self.left {
+                node.delete(key);
+            } else { // not found
+            }
+        } else if key > self.key {
+            if let Some(node) = &mut self.right {
+                node.delete(key);
+            } else { // not found
+            }
+        } else {
+            match (&mut self.left, &mut self.right) {
+                (Some(_), Some(_)) => {}
+                (None, Some(_)) => {}
+                (Some(_), None) => {}
+                (None, None) => {}
+            }
+        }
+    }
+
+    pub fn get_node_num(&self) -> usize {
+        let left = match &self.left {
+            None => 0,
+            Some(node) => node.get_node_num(),
+        };
+        let right = match &self.right {
+            None => 0,
+            Some(node) => node.get_node_num(),
+        };
+        return 1 + left + right;
+    }
+    pub fn get_depth(&self) -> usize {
+        let left = match &self.left {
+            None => 0,
+            Some(node) => node.get_depth(),
+        };
+        let right = match &self.right {
+            None => 0,
+            Some(node) => node.get_depth(),
+        };
+        if left > right {
+            return left + 1;
+        } else {
+            return right + 1;
         }
     }
 }
 // 前序遍历
-fn pre_order<T: Debug>(node: &TreeNode<T>) {
+fn pre_order<K, V: Debug>(node: &TreeNode<K, V>) {
     println!("{:?}", node.val);
     if let Some(left) = &node.left {
         pre_order(&left)
@@ -67,7 +135,7 @@ fn pre_order<T: Debug>(node: &TreeNode<T>) {
 }
 // 中序遍历
 // 输出的结果是排好序的
-fn infix_order<T: Debug>(node: &TreeNode<T>) {
+fn infix_order<K, V: Debug>(node: &TreeNode<K, V>) {
     if let Some(left) = &node.left {
         infix_order(&left)
     }
@@ -78,7 +146,7 @@ fn infix_order<T: Debug>(node: &TreeNode<T>) {
 }
 
 // 后序遍历
-fn after_order<T: Debug>(node: &TreeNode<T>) {
+fn after_order<K, V: Debug>(node: &TreeNode<K, V>) {
     if let Some(left) = &node.left {
         after_order(&left)
     }
@@ -88,7 +156,7 @@ fn after_order<T: Debug>(node: &TreeNode<T>) {
     println!("{:?}", node.val);
 }
 // 层序遍历
-fn level_order<T: Debug>(node: &TreeNode<T>) {
+fn level_order<K, V: Debug>(node: &TreeNode<K, V>) {
     let mut queue = Vec::new(); //初始化队列
     queue.push(node); //根结点入队列
     while !queue.is_empty() {
@@ -104,33 +172,43 @@ fn level_order<T: Debug>(node: &TreeNode<T>) {
 }
 #[test]
 fn test_binary_tree() {
-    let mut tree = TreeNode::new(23);
-    tree.insert(16);
-    tree.insert(3);
-    tree.insert(22);
-    tree.insert(45);
-    tree.insert(37);
-    tree.insert(99);
-    tree.insert(35);
-    tree.insert(40);
+    let mut tree = TreeNode::new(0, 23);
+    tree.insert(1, 16);
+    tree.insert(2, 3);
+    tree.insert(3, 22);
+    tree.insert(4, 45);
+    tree.insert(5, 37);
+    tree.insert(6, 99);
+    tree.insert(7, 35);
+    tree.insert(8, 40);
 
     println!(
         "***********************************  prev  order  ***********************************"
     );
     pre_order(&tree);
+
     println!(
         "***********************************  infix order  ***********************************"
     );
-
     infix_order(&tree);
+
     println!(
         "***********************************  after order  ***********************************"
     );
-
     after_order(&tree);
+
     println!(
         "***********************************  level order  ***********************************"
     );
-
     level_order(&tree);
+    tree.insert(8, 41);
+    tree.insert(9, 41);
+
+    println!(
+        "***********************************  level order  ***********************************"
+    );
+    level_order(&tree);
+
+    println!("node num : {}", &tree.get_node_num());
+    println!("depth : {}", &tree.get_depth());
 }
