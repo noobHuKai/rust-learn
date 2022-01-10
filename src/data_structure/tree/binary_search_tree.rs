@@ -1,5 +1,8 @@
 //! # 二叉查找树或者说二叉搜索树(Binary Search Tree)
-use std::{cmp::PartialOrd, fmt::Debug};
+use std::{
+    cmp::PartialOrd,
+    fmt::{Debug, Display},
+};
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct TreeNode<K, V> {
@@ -12,7 +15,7 @@ pub struct TreeNode<K, V> {
 impl<K, V> TreeNode<K, V>
 where
     K: PartialOrd,
-    V: Copy,
+    V: Copy + Display,
 {
     #[inline]
     pub fn new(key: K, val: V) -> Self {
@@ -75,26 +78,27 @@ where
         }
     }
     // 删除节点
-    pub fn delete(&mut self, key: K) {
-        if key < self.key {
-            if let Some(node) = &mut self.left {
-                node.delete(key);
-            } else { // not found
-            }
-        } else if key > self.key {
-            if let Some(node) = &mut self.right {
-                node.delete(key);
-            } else { // not found
-            }
-        } else {
-            match (&mut self.left, &mut self.right) {
-                (Some(_), Some(_)) => {}
-                (None, Some(_)) => {}
-                (Some(_), None) => {}
-                (None, None) => {}
-            }
-        }
-    }
+    // pub fn delete(&mut self, key: K) {
+    //     if key < self.key {
+    //         if let Some(node) = &mut self.left {
+    //             node.delete(key);
+    //         } else { // not found
+    //         }
+    //     } else if key > self.key {
+    //         if let Some(node) = &mut self.right {
+    //             node.delete(key);
+    //         } else { // not found
+    //         }
+    //     } else {
+    //         match (&mut self.left, &mut self.right) {
+    //             (Some(_), Some(_)) => {}
+    //             (None, Some(_)) => {}
+    //             (Some(_), None) => {}
+    //             (None, None) => {
+    //             }
+    //         }
+    //     }
+    // }
 
     pub fn get_node_num(&self) -> usize {
         let left = match &self.left {
@@ -122,54 +126,56 @@ where
             return right + 1;
         }
     }
-}
-// 前序遍历
-fn pre_order<K, V: Debug>(node: &TreeNode<K, V>) {
-    println!("{:?}", node.val);
-    if let Some(left) = &node.left {
-        pre_order(&left)
+
+    // 前序遍历
+    fn pre_order(&self) {
+        println!("{}", self.val);
+        if let Some(left) = &self.left {
+            left.pre_order()
+        }
+        if let Some(right) = &self.right {
+            right.pre_order()
+        }
     }
-    if let Some(right) = &node.right {
-        pre_order(&right)
+    // 中序遍历
+    // 输出的结果是排好序的
+    fn infix_order(&self) {
+        if let Some(left) = &self.left {
+            left.infix_order()
+        }
+        println!("{}", self.val);
+        if let Some(right) = &self.right {
+            right.infix_order()
+        }
     }
-}
-// 中序遍历
-// 输出的结果是排好序的
-fn infix_order<K, V: Debug>(node: &TreeNode<K, V>) {
-    if let Some(left) = &node.left {
-        infix_order(&left)
+
+    // 后序遍历
+    fn after_order(&self) {
+        if let Some(left) = &self.left {
+            left.after_order()
+        }
+        if let Some(right) = &self.right {
+            right.after_order()
+        }
+        println!("{}", self.val);
     }
-    println!("{:?}", node.val);
-    if let Some(right) = &node.right {
-        infix_order(&right)
+    // 层序遍历
+    fn level_order(&self) {
+        let mut queue = Vec::new(); //初始化队列
+        queue.push(self); //根结点入队列
+        while !queue.is_empty() {
+            let a = queue.remove(0);
+            println!("{}", a.val);
+            if let Some(b) = &a.left {
+                queue.push(b.as_ref());
+            }
+            if let Some(b) = &a.right {
+                queue.push(b.as_ref());
+            }
+        }
     }
 }
 
-// 后序遍历
-fn after_order<K, V: Debug>(node: &TreeNode<K, V>) {
-    if let Some(left) = &node.left {
-        after_order(&left)
-    }
-    if let Some(right) = &node.right {
-        after_order(&right)
-    }
-    println!("{:?}", node.val);
-}
-// 层序遍历
-fn level_order<K, V: Debug>(node: &TreeNode<K, V>) {
-    let mut queue = Vec::new(); //初始化队列
-    queue.push(node); //根结点入队列
-    while !queue.is_empty() {
-        let a = queue.remove(0);
-        println!("{:?}", a.val);
-        if let Some(b) = &a.left {
-            queue.push(b.as_ref());
-        }
-        if let Some(b) = &a.right {
-            queue.push(b.as_ref());
-        }
-    }
-}
 #[test]
 fn test_binary_tree() {
     let mut tree = TreeNode::new(0, 23);
@@ -185,29 +191,29 @@ fn test_binary_tree() {
     println!(
         "***********************************  prev  order  ***********************************"
     );
-    pre_order(&tree);
+    tree.pre_order();
 
     println!(
         "***********************************  infix order  ***********************************"
     );
-    infix_order(&tree);
+    tree.infix_order();
 
     println!(
         "***********************************  after order  ***********************************"
     );
-    after_order(&tree);
+    tree.after_order();
 
     println!(
         "***********************************  level order  ***********************************"
     );
-    level_order(&tree);
+    tree.level_order();
     tree.insert(8, 41);
     tree.insert(9, 41);
 
     println!(
         "***********************************  level order  ***********************************"
     );
-    level_order(&tree);
+    tree.level_order();
 
     println!("node num : {}", &tree.get_node_num());
     println!("depth : {}", &tree.get_depth());
