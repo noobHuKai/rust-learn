@@ -1,7 +1,7 @@
 //! # 二叉查找树或者说二叉搜索树(Binary Search Tree)
 use std::{cmp::PartialOrd, fmt::Display};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct TreeNode<T> {
     pub data: T,
     pub left: Option<Box<TreeNode<T>>>,
@@ -35,17 +35,17 @@ where
         } else { // 等于不做修改
         }
     }
-    fn find(&mut self, find_data: T) -> Option<&mut Self> {
-        if find_data < self.data {
+    fn find(&mut self, target: T) -> Option<&mut Self> {
+        if target < self.data {
             if let Some(left) = &mut self.left {
-                return left.find(find_data);
+                return left.find(target);
             } else {
                 // not found
                 return None;
             }
-        } else if find_data > self.data {
+        } else if target > self.data {
             if let Some(right) = &mut self.right {
-                return right.find(find_data);
+                return right.find(target);
             } else {
                 // not found
                 return None;
@@ -54,53 +54,20 @@ where
             return Some(self);
         }
     }
-    fn find_min(&mut self) -> Option<&mut Self> {
+    fn find_min(&self) -> Option<&Self> {
         if self.left.is_some() {
-            return self.left.as_mut().unwrap().find_min();
+            return self.left.as_ref().unwrap().find_min();
         } else {
             return Some(self);
         }
     }
-    fn find_max(&mut self) -> Option<&mut Self> {
+    fn find_max(&self) -> Option<&Self> {
         if self.right.is_some() {
-            return self.right.as_mut().unwrap().find_max();
+            return self.right.as_ref().unwrap().find_max();
         } else {
             return Some(self);
         }
     }
-    // fn delete(&mut self, data: T) {
-    //     if data < self.data {
-    //         if let Some(left) = &mut self.left {
-    //             left.delete(data);
-    //         } else {
-    //             // not found
-    //         }
-    //     } else if data > self.data {
-    //         if let Some(right) = &mut self.right {
-    //             right.delete(data);
-    //         } else {
-    //             // not found
-    //         }
-    //     } else {
-    //         if self.left.is_some() && self.right.is_some() {
-    //             // 左右子节点都有
-    //             let temp = self.right.as_mut().unwrap().find_min();
-    //             self.data = temp.unwrap().data;
-    //             self.right.as_mut().unwrap().delete(self.data);
-    //         } else {
-    //             if self.left.is_some() {
-    //                 if let Some(right) = &mut self.right {
-    //                     self.data = right.data;
-    //                     self.left = right.left;
-    //                     self.right = right.right;
-    //                 }
-    //             } else if self.right.is_some() {
-    //             } else {
-    //             }
-    //         }
-    //     }
-    // }
-
     pub fn get_node_num(&self) -> usize {
         let left = match &self.left {
             None => 0,
@@ -174,60 +141,35 @@ where
             }
         }
     }
+    // fn delete(&mut self, target: T) -> Option<Box<TreeNode<T>>> {
+    //     if target < self.data {
+    //         if let Some(left) = &mut self.left.take() {
+    //             self.left = left.delete(target);
+    //         }
+    //     }
+    //     if target > self.data {
+    //         if let Some(right) = &mut self.right.take() {
+    //             self.right = right.delete(target);
+    //         }
+    //     }
+    //     if target != self.data {
+    //         return None;
+    //     }
 
-    fn rightmost_child(&mut self) -> Option<Box<TreeNode<T>>> {
-        match self.right {
-            Some(ref mut right) => {
-                if let Some(t) = right.rightmost_child() {
-                    Some(t)
-                } else {
-                    let mut r = self.right.take();
-                    if let Some(ref mut r) = r {
-                        self.right = std::mem::replace(&mut r.left, None);
-                    }
-                    r
-                }
-            }
-            None => None,
-        }
-    }
-}
-
-fn delete<T: PartialOrd+Display+Copy>(mut this: Box<TreeNode<T>>, target: &T) -> Option<Box<TreeNode<T>>> {
-    if target < &this.data {
-        if let Some(left) = this.left.take() {
-            this.left = delete(left, target);
-        }
-        return Some(this);
-    }
-
-    if target > &this.data {
-        if let Some(right) = this.right.take() {
-            this.left = delete(right, target);
-        }
-        return Some(this);
-    }
-
-    if target != &this.data {
-        println!("not found");
-        return None;
-    }
-    match (this.left.take(), this.right.take()) {
-        (None, None) => None,
-        (Some(left), None) => Some(left),
-        (None, Some(right)) => Some(right),
-
-        (Some(mut left), Some(right)) => {
-            if let Some(mut rightmost) = left.rightmost_child() {
-                rightmost.left = Some(left);
-                rightmost.right = Some(right);
-                Some(rightmost)
-            } else {
-                left.right = Some(right);
-                Some(left)
-            }
-        }
-    }
+    //     match (self.left.take(), self.right.take()) {
+    //         (None, None) => None,
+    //         (None, Some(right)) => Some(right),
+    //         (Some(left), None) => Some(left),
+    //         (Some(mut left), Some(mut right)) => {
+    //             if let Some(mut rightmost) = left.find_max() {
+    //                 rightmost.left = Some(left);
+    //                 rightmost.right = Some(right);
+    //                 return Some(Box::new(*rightmost));
+    //             }
+    //             None
+    //         }
+    //     }
+    // }
 }
 
 #[test]
@@ -269,10 +211,9 @@ fn test_bst() {
     println!(
         "***********************************  delete data  ***********************************"
     );
-    // tree.delete(data);
-   let mut a= delete(Box::new(tree), &170);
-    println!(
-        "***********************************  level order  ***********************************"
-    );
-    a.as_mut().unwrap().level_order();
+    // tree.delete(170);
+    // println!(
+    //     "***********************************  level order  ***********************************"
+    // );
+    // tree.level_order();
 }
