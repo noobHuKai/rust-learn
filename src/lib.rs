@@ -7,4 +7,4 @@ pub mod data_structure;
 #[allow(dead_code)]
 pub mod design_pattern;
 #[allow(dead_code)]
-pub mod encryption;
+pub mod crypto;
