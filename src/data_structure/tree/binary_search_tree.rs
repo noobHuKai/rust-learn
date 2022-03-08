@@ -141,35 +141,15 @@ where
             }
         }
     }
-    // fn delete(&mut self, target: T) -> Option<Box<TreeNode<T>>> {
-    //     if target < self.data {
-    //         if let Some(left) = &mut self.left.take() {
-    //             self.left = left.delete(target);
-    //         }
-    //     }
-    //     if target > self.data {
-    //         if let Some(right) = &mut self.right.take() {
-    //             self.right = right.delete(target);
-    //         }
-    //     }
-    //     if target != self.data {
-    //         return None;
-    //     }
 
-    //     match (self.left.take(), self.right.take()) {
-    //         (None, None) => None,
-    //         (None, Some(right)) => Some(right),
-    //         (Some(left), None) => Some(left),
-    //         (Some(mut left), Some(mut right)) => {
-    //             if let Some(mut rightmost) = left.find_max() {
-    //                 rightmost.left = Some(left);
-    //                 rightmost.right = Some(right);
-    //                 return Some(Box::new(*rightmost));
-    //             }
-    //             None
-    //         }
-    //     }
-    // }
+    pub fn remove(mut self: Box<TreeNode<T>>, target: T) -> Option<Box<TreeNode<T>>> {
+        if self.data == target{
+            return None
+        }
+        self.left = self.left.take().and_then(|v| v.remove(target));
+        self.right = self.right.take().and_then(|v| v.remove(target));
+        Some(self)
+    }
 }
 
 #[test]
@@ -211,9 +191,6 @@ fn test_bst() {
     println!(
         "***********************************  delete data  ***********************************"
     );
-    // tree.delete(170);
-    // println!(
-    //     "***********************************  level order  ***********************************"
-    // );
-    // tree.level_order();
+    let tree = TreeNode::remove(Box::new(tree), 170).unwrap();
+    tree.level_order();
 }
