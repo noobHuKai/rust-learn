@@ -141,13 +141,30 @@ where
             }
         }
     }
-
-    pub fn remove(mut self: Box<TreeNode<T>>, target: T) -> Option<Box<TreeNode<T>>> {
-        if self.data == target{
-            return None
+    // 删除节点
+    fn remove(self, target: T) -> Self {
+        return *Self::remove_node(Box::new(self), target).unwrap();
+    }
+    fn remove_node(mut self: Box<TreeNode<T>>, target: T) -> Option<Box<TreeNode<T>>> {
+        if self.data == target {
+            match (self.left, self.right) {
+                (None, None) => return None,
+                (None, Some(right)) => return Some(right),
+                (Some(left), None) => return Some(left),
+                (Some(left), Some(right)) => {
+                    // 找到右子树最小节点
+                    let right_min = right.find_min().unwrap().clone();
+                    // 本节点值复制成右子树最小节点的值
+                    self.data = right_min.data;
+                    self.left = Some(left);
+                    // 删除右子树最小节点
+                    self.right = Self::remove_node(right,  right_min.data);
+                    return  Some(self)
+                },
+            }
         }
-        self.left = self.left.take().and_then(|v| v.remove(target));
-        self.right = self.right.take().and_then(|v| v.remove(target));
+        self.left = self.left.take().and_then(|v| v.remove_node(target));
+        self.right = self.right.take().and_then(|v| v.remove_node(target));
         Some(self)
     }
 }
@@ -191,6 +208,6 @@ fn test_bst() {
     println!(
         "***********************************  delete data  ***********************************"
     );
-    let tree = TreeNode::remove(Box::new(tree), 170).unwrap();
+    let tree = tree.remove(50);
     tree.level_order();
 }
