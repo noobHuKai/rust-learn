@@ -8,8 +8,7 @@
 //! ## 动画演示
 //! ![selectSort](https://images2017.cnblogs.com/blog/849589/201710/849589-20171015224719590-1433219824.gif)
 
-
-fn selection_sort(arr: &mut [i32]) {
+fn selection_sort<T: Ord>(arr: &mut Vec<T>) {
     for i in 0..arr.len() {
         let mut min_index = i;
         for j in (i + 1)..arr.len() {
@@ -21,10 +20,41 @@ fn selection_sort(arr: &mut [i32]) {
     }
 }
 
-#[test]
-fn test_selection_sort() {
-    let mut arr = [66, 18, 54, 67, 36, 44, 78, 18, 12, 56];
-    println!("before : {:?}", arr);
-    selection_sort(&mut arr);
-    println!("after : {:?}", arr);
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn basic() {
+        let mut arr = vec![3, 5, 6, 3, 1, 4];
+        selection_sort(&mut arr);
+        for i in 0..arr.len() - 1 {
+            assert!(arr[i] <= arr[i + 1]);
+        }
+    }
+
+    #[test]
+    fn empty() {
+        let mut arr: Vec<i32> = vec![];
+        selection_sort(&mut arr);
+        assert_eq!(arr, vec![]);
+    }
+
+    #[test]
+    fn reverse() {
+        let mut arr = vec![6, 5, 4, 3, 2, 1];
+        selection_sort(&mut arr);
+        for i in 0..arr.len() - 1 {
+            assert!(arr[i] <= arr[i + 1]);
+        }
+    }
+
+    #[test]
+    fn already_sorted() {
+        let mut arr = vec![1, 2, 3, 4, 5, 6];
+        selection_sort(&mut arr);
+        for i in 0..arr.len() - 1 {
+            assert!(arr[i] <= arr[i + 1]);
+        }
+    }
 }

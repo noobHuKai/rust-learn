@@ -7,23 +7,35 @@
 //! * 将两个排序好的子序列合并成一个最终的排序序列。
 //! ![mergeSort](https://images2017.cnblogs.com/blog/849589/201710/849589-20171015230557043-37375010.gif)
 
-fn merge_sort(arr: &mut [i32]) {
-    let mut temp = [0; 100];
-    sort(arr, 0, (arr.len() - 1) as usize, &mut temp);
+fn merge_sort<T: Ord + Copy>(arr: &mut Vec<T>) {
+    if arr.is_empty() {
+        return;
+    }
+    sort(arr, 0, (arr.len() - 1) as usize);
 }
 
-fn sort(arr: &mut [i32], left: usize, right: usize, temp: &mut [i32]) {
+fn sort<T: Ord + Copy>(arr: &mut Vec<T>, left: usize, right: usize) {
     if left < right {
         let mid = ((left + right) / 2) as usize;
-        sort(arr, left, mid, temp); //左边归并排序，使得左子序列有序
-        sort(arr, mid + 1, right, temp); //右边归并排序，使得右子序列有序
-        merge(arr, left, mid, right, temp); //将两个有序子数组合并操作
+        sort(arr, left, mid); //左边归并排序，使得左子序列有序
+        sort(arr, mid + 1, right); //右边归并排序，使得右子序列有序
+        merge(arr, left, mid, right); //将两个有序子数组合并操作
     }
 }
-fn merge<'a>(arr: &'a mut [i32], mut left: usize, mid: usize, right: usize, temp: &'a mut [i32]) {
+fn merge<'a, T: Ord + Copy>(
+    arr: &'a mut Vec<T>,
+    mut left: usize,
+    mid: usize,
+    right: usize,
+) {
     let mut i = left;
     let mut j = mid + 1;
     let mut cur = 0;
+    let mut temp = Vec::new();
+    // todo:
+    for _ in 0..2*right{
+        temp.push(arr[i]);
+    }
     while i <= mid && j <= right {
         if arr[i] <= arr[j] {
             temp[cur] = arr[i];
@@ -55,10 +67,41 @@ fn merge<'a>(arr: &'a mut [i32], mut left: usize, mid: usize, right: usize, temp
     }
 }
 
-#[test]
-fn test_merge_sort() {
-    let mut arr = [66, 18, 54, 67, 36, 44, 78, 18, 12, 56];
-    println!("before : {:?}", arr);
-    merge_sort(&mut arr);
-    println!("after : {:?}", arr);
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn basic() {
+        let mut arr = vec![3, 5, 6, 3, 1, 4];
+        merge_sort(&mut arr);
+        for i in 0..arr.len() - 1 {
+            assert!(arr[i] <= arr[i + 1]);
+        }
+    }
+
+    #[test]
+    fn empty() {
+        let mut arr: Vec<i32> = vec![];
+        merge_sort(&mut arr);
+        assert_eq!(arr, vec![]);
+    }
+
+    #[test]
+    fn reverse() {
+        let mut arr = vec![6, 5, 4, 3, 2, 1];
+        merge_sort(&mut arr);
+        for i in 0..arr.len() - 1 {
+            assert!(arr[i] <= arr[i + 1]);
+        }
+    }
+
+    #[test]
+    fn already_sorted() {
+        let mut arr = vec![1, 2, 3, 4, 5, 6];
+        merge_sort(&mut arr);
+        for i in 0..arr.len() - 1 {
+            assert!(arr[i] <= arr[i + 1]);
+        }
+    }
 }

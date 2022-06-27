@@ -9,24 +9,56 @@
 //! ## 动画演示
 //! ![shellSort](https://images2018.cnblogs.com/blog/849589/201803/849589-20180331170017421-364506073.gif)
 
-fn shell_sort(arr: &mut [i32]) {
+fn shell_sort<T: Ord + Copy>(arr: &mut Vec<T>) {
     let mut gap = arr.len() / 2;
     while gap > 0 {
         for i in gap..arr.len() {
             let mut j = i;
-            while ((j as i32) - (gap as i32)) >= 0 && arr[i] < arr[j - gap] {
-                arr.swap(j, j - gap);
-                j = j - gap;
+            while j >= gap && arr[i] < arr[j - gap] {
+                arr[j] = arr[j - gap];
+                j -= gap;
             }
+            arr[j] = arr[i];
         }
         gap = gap / 2;
     }
 }
 
-#[test]
-fn test_shell_sort() {
-    let mut arr = [66, 18, 54, 67, 36, 44, 78, 18, 12, 56];
-    println!("before : {:?}", arr);
-    shell_sort(&mut arr);
-    println!("after : {:?}", arr);
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn basic() {
+        let mut arr = vec![3, 5, 6, 3, 1, 4];
+        shell_sort(&mut arr);
+        for i in 0..arr.len() - 1 {
+            assert!(arr[i] <= arr[i + 1]);
+        }
+    }
+
+    #[test]
+    fn empty() {
+        let mut arr: Vec<i32> = vec![];
+        shell_sort(&mut arr);
+        assert_eq!(arr, vec![]);
+    }
+
+    #[test]
+    fn reverse() {
+        let mut arr = vec![6, 5, 4, 3, 2, 1];
+        shell_sort(&mut arr);
+        for i in 0..arr.len() - 1 {
+            assert!(arr[i] <= arr[i + 1]);
+        }
+    }
+
+    #[test]
+    fn already_sorted() {
+        let mut arr = vec![1, 2, 3, 4, 5, 6];
+        shell_sort(&mut arr);
+        for i in 0..arr.len() - 1 {
+            assert!(arr[i] <= arr[i + 1]);
+        }
+    }
 }

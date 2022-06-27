@@ -11,7 +11,7 @@
 //! ## 动画演示
 //! ![insertSort](https://images2017.cnblogs.com/blog/849589/201710/849589-20171015225645277-1151100000.gif)
 
-fn insertion_sort(arr: &mut [i32]) {
+fn insertion_sort<T: Ord + Copy>(arr: &mut Vec<T>) {
     //赋值交换
     for i in 1..arr.len() {
         let mut prev_index: i32 = i as i32 - 1;
@@ -24,7 +24,7 @@ fn insertion_sort(arr: &mut [i32]) {
     }
 }
 
-fn insertion_sort1(arr: &mut [i32]) {
+fn insertion_sort_swap<T: Ord + Copy>(arr: &mut Vec<T>) {
     //直接交换
     for i in 1..arr.len() {
         let mut j = i;
@@ -35,18 +35,58 @@ fn insertion_sort1(arr: &mut [i32]) {
     }
 }
 
-#[test]
-fn test_insertion_sort() {
-    let mut arr = [66, 18, 54, 67, 36, 44, 78, 18, 12, 56];
-    println!("before : {:?}", arr);
-    insertion_sort1(&mut arr);
-    println!("after : {:?}", arr);
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-#[test]
-fn test_insertion_sort1() {
-    let mut arr = [66, 18, 54, 67, 36, 44, 78, 18, 12, 56];
-    println!("before : {:?}", arr);
-    insertion_sort1(&mut arr);
-    println!("after : {:?}", arr);
+    #[test]
+    fn test_insertion_sort() {
+        let mut arr = vec![66, 18, 54, 67, 36, 44, 78, 18, 12, 56];
+        insertion_sort(&mut arr);
+        for i in 0..arr.len() - 1 {
+            assert!(arr[i] <= arr[i + 1])
+        }
+    }
+
+    #[test]
+    fn test_insertion_sort1() {
+        let mut arr = vec![66, 18, 54, 67, 36, 44, 78, 18, 12, 56];
+        insertion_sort_swap(&mut arr);
+        for i in 0..arr.len() - 1 {
+            assert!(arr[i] <= arr[i + 1])
+        }
+    }
+    #[test]
+    fn basic() {
+        let mut arr = vec![3, 5, 6, 3, 1, 4];
+        insertion_sort(&mut arr);
+        for i in 0..arr.len() - 1 {
+            assert!(arr[i] <= arr[i + 1]);
+        }
+    }
+
+    #[test]
+    fn empty() {
+        let mut arr: Vec<i32> = vec![];
+        insertion_sort(&mut arr);
+        assert_eq!(arr, vec![]);
+    }
+
+    #[test]
+    fn reverse() {
+        let mut arr = vec![6, 5, 4, 3, 2, 1];
+        insertion_sort(&mut arr);
+        for i in 0..arr.len() - 1 {
+            assert!(arr[i] <= arr[i + 1]);
+        }
+    }
+
+    #[test]
+    fn already_sorted() {
+        let mut arr = vec![1, 2, 3, 4, 5, 6];
+        insertion_sort(&mut arr);
+        for i in 0..arr.len() - 1 {
+            assert!(arr[i] <= arr[i + 1]);
+        }
+    }
 }

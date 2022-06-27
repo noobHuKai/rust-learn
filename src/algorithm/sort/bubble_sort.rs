@@ -9,10 +9,11 @@
 //! ## 动图演示
 //! ![bubbleSort](https://images2017.cnblogs.com/blog/849589/201710/849589-20171015223238449-2146169197.gif)
 
-
-
 // 冒泡排序
-fn bubble_sort(arr: &mut [i32]) {
+fn bubble_sort<T: Ord>(arr: &mut Vec<T>) {
+    if arr.is_empty() {
+        return;
+    }
     for i in 0..(arr.len() - 1) {
         for j in 0..(arr.len() - i - 1) {
             if arr[j] > arr[j + 1] {
@@ -22,10 +23,41 @@ fn bubble_sort(arr: &mut [i32]) {
     }
 }
 
-#[test]
-fn test_bubble_sort() {
-    let mut arr = [66, 18, 54, 67, 36, 44, 78, 18, 12, 56];
-    println!("before : {:?}", arr);
-    bubble_sort(& mut arr);
-    println!("after : {:?}", arr);
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn basic() {
+        let mut arr = vec![3, 5, 6, 3, 1, 4];
+        bubble_sort(&mut arr);
+        for i in 0..arr.len() - 1 {
+            assert!(arr[i] <= arr[i + 1]);
+        }
+    }
+
+    #[test]
+    fn empty() {
+        let mut arr: Vec<i32> = vec![];
+        bubble_sort(&mut arr);
+        assert_eq!(arr, vec![]);
+    }
+
+    #[test]
+    fn reverse() {
+        let mut arr = vec![6, 5, 4, 3, 2, 1];
+        bubble_sort(&mut arr);
+        for i in 0..arr.len() - 1 {
+            assert!(arr[i] <= arr[i + 1]);
+        }
+    }
+
+    #[test]
+    fn already_sorted() {
+        let mut arr = vec![1, 2, 3, 4, 5, 6];
+        bubble_sort(&mut arr);
+        for i in 0..arr.len() - 1 {
+            assert!(arr[i] <= arr[i + 1]);
+        }
+    }
 }

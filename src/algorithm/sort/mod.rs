@@ -16,14 +16,20 @@ pub mod quick_sort;
 pub mod selection_sort;
 pub mod shell_sort;
 
-#[test]
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test_std_sort() {
+        let mut vec1 = vec![66, 18, 54, 67, 36, 44, 78, 18, 12, 56];
+        vec1.sort();
+        for i in 0..vec1.len() - 1 {
+            assert!(vec1[i] <= vec1[i + 1])
+        }
 
-fn test_sort() {
-    let mut a = vec![66, 18, 54, 67, 36, 44, 78, 18, 12, 56];
-    a.sort();
-    println!("{:?}", a);
-
-    let mut b = [66, 18, 54, 67, 36, 44, 78, 18, 12, 56];
-    b.sort();
-    println!("{:?}", b);
+        let mut vec2 = [66, 18, 54, 67, 36, 44, 78, 18, 99, 56];
+        vec2.sort_unstable();
+        for i in 0..vec2.len() - 1 {
+            assert!(vec2[i] <= vec2[i + 1])
+        }
+    }
 }

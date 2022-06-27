@@ -8,11 +8,14 @@
 //! ## 动画演示
 //! ![quickSort](https://images2017.cnblogs.com/blog/849589/201710/849589-20171015230936371-1413523412.gif)
 
-fn quick_sort(arr: &mut [i32]) {
+fn quick_sort<T: Ord + Copy>(arr: &mut Vec<T>) {
+    if arr.is_empty() {
+        return;
+    }
     sort(arr, 0, arr.len() - 1);
 }
 
-fn sort(arr: &mut [i32], left: usize, right: usize) {
+fn sort<T: Ord + Copy>(arr: &mut Vec<T>, left: usize, right: usize) {
     if left >= right {
         return;
     }
@@ -20,7 +23,7 @@ fn sort(arr: &mut [i32], left: usize, right: usize) {
     let mut j = right;
     let temp = arr[left];
 
-    while i != j {
+    while i < j {
         while i < j && arr[j] >= temp {
             j -= 1;
         }
@@ -32,17 +35,47 @@ fn sort(arr: &mut [i32], left: usize, right: usize) {
         }
     }
     arr.swap(i, left);
-    if i == 0{
-        return;
+    if i > 1 {
+        sort(arr, left, i - 1);
     }
-    sort(arr, left, i - 1);
-    sort(arr, j + 1, right)
+    sort(arr, i + 1, right)
 }
 
-#[test]
-fn test_quick_sort() {
-    let mut arr = [66, 18, 54, 67, 36, 44, 78, 18, 12, 56];
-    println!("before : {:?}", arr);
-    quick_sort(&mut arr);
-    println!("after : {:?}", arr);
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn basic() {
+        let mut arr = vec![3, 5, 6, 3, 1, 4];
+        quick_sort(&mut arr);
+        for i in 0..arr.len() - 1 {
+            assert!(arr[i] <= arr[i + 1]);
+        }
+    }
+
+    #[test]
+    fn empty() {
+        let mut arr: Vec<i32> = vec![];
+        quick_sort(&mut arr);
+        assert_eq!(arr, vec![]);
+    }
+
+    #[test]
+    fn reverse() {
+        let mut arr = vec![6, 5, 4, 3, 2, 1];
+        quick_sort(&mut arr);
+        for i in 0..arr.len() - 1 {
+            assert!(arr[i] <= arr[i + 1]);
+        }
+    }
+
+    #[test]
+    fn already_sorted() {
+        let mut arr = vec![1, 2, 3, 4, 5, 6];
+        quick_sort(&mut arr);
+        for i in 0..arr.len() - 1 {
+            assert!(arr[i] <= arr[i + 1]);
+        }
+    }
 }
